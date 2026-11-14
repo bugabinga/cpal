@@ -17,7 +17,7 @@ impl AudioDeviceInfo {
      * Request audio devices using Android Java API
      */
     pub fn request(direction: DeviceDirection) -> Result<Vec<AudioDeviceInfo>, String> {
-        let context = get_context();
+        let context = get_context()?;
 
         with_attached(context, |env, context| {
             let sdk_version = env

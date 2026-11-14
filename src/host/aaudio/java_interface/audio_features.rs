@@ -35,7 +35,7 @@ impl AudioFeature {
      * Check availability of an audio feature using Android Java API
      */
     pub fn has(&self) -> Result<bool, String> {
-        let context = get_context();
+        let context = get_context()?;
 
         with_attached(context, |env, activity| {
             try_check_system_feature(env, &activity, (*self).into())

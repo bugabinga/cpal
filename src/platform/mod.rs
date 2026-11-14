@@ -918,6 +918,7 @@ mod platform_impl {
 
 #[cfg(target_os = "android")]
 mod platform_impl {
+    pub use crate::host::aaudio::without_java_vm;
     use crate::host::aaudio::Host as AAudioHost;
     impl_platform_host!(
         AAudio => AAudioHost,

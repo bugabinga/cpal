@@ -6,7 +6,7 @@ use std::{
     fmt,
     hash::{Hash, Hasher},
     sync::{
-        atomic::{AtomicI32, Ordering},
+        atomic::{AtomicBool, AtomicI32, Ordering},
         Arc, Mutex,
     },
     time::Duration,
@@ -32,6 +32,20 @@ mod java_interface;
 
 use convert::{input_stream_instant, now_stream_instant, output_stream_instant};
 use java_interface::{AudioDeviceInfo, AudioDeviceType as AndroidDeviceType, AudioManager};
+
+static WITHOUT_JAVA_VM: AtomicBool = AtomicBool::new(false);
+
+/// Declares that this process hosts no Java VM, as in a plain native executable (for example
+/// under Termux). Java-backed queries then fail instead of panicking on the missing
+/// `ndk_context`: device enumeration falls back to the default devices and output streams use
+/// AAudio's own burst size. Call it before using the host; it cannot be undone.
+pub fn without_java_vm() {
+    WITHOUT_JAVA_VM.store(true, Ordering::Relaxed);
+}
+
+fn java_vm_available() -> bool {
+    !WITHOUT_JAVA_VM.load(Ordering::Relaxed)
+}
 
 impl From<AndroidDeviceType> for DeviceType {
     fn from(device_type: AndroidDeviceType) -> Self {

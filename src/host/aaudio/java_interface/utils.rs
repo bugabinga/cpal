@@ -7,8 +7,12 @@ pub use jni::{
 };
 use ndk_context::AndroidContext;
 
-pub fn get_context() -> AndroidContext {
-    ndk_context::android_context()
+/// Errors instead of panicking when [`crate::platform::without_java_vm`] was called.
+pub fn get_context() -> Result<AndroidContext, String> {
+    if !super::super::java_vm_available() {
+        return Err("no Java VM in this process".into());
+    }
+    Ok(ndk_context::android_context())
 }
 
 pub fn with_attached<F, R>(context: AndroidContext, closure: F) -> JResult<R>

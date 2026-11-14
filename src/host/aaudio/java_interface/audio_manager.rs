@@ -6,7 +6,7 @@ use super::{
 impl AudioManager {
     /// Get the AAudio mixer burst count from system property
     pub fn get_mixer_bursts() -> Result<i32, String> {
-        let context = get_context();
+        let context = get_context()?;
 
         with_attached(context, |env, _context| get_mixer_bursts(env))
             .map_err(|error| error.to_string())
